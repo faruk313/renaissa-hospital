@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
-use Auth;
 use Illuminate\Http\Request;
 use App\Models\PathologyDepartment;
+use DataTables;
+use Auth;
 use Validator;
+
 
 class PathologyDepartmentController extends Controller
 {
@@ -24,8 +26,7 @@ class PathologyDepartmentController extends Controller
                 return date('d-m-Y', strtotime($data->created_at) );
             })
             ->addColumn('actions', function($data){
-                $button = '<a type="button" id="view" data-id="'.$data->id.'" class="view"><i class="far fa-eye text-success"></i></a>';
-                $button .= '<a type="button" name="edit" id="'.$data->id.'" class="edit"><i class="fas fa-pencil-alt text-info"></i></a>';
+                $button = '<a type="button" name="edit" id="'.$data->id.'" class="edit"><i class="fas fa-pencil-alt text-info"></i></a>';
                 $button .= '<a type="button" name="delete" id="'.$data->id.'" class="delete"><i class="far fa-trash-alt text-danger"></i></a>';
                 return $button;
             })->rawColumns(['actions'])->escapeColumns([])->make(true);
@@ -37,16 +38,16 @@ class PathologyDepartmentController extends Controller
     {
         if(empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:Pathology_departments,department_name',
-                'department_status'      =>  'required|bool'
+                'pathology_department_name'        =>  'required|string|max:100|unique:Pathology_departments,pathology_department_name',
+                'pathology_department_status'      =>  'required|bool'
             );
         }
 
         if(!empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:Pathology_departments,department_name',
-                'department_note'        =>  'required|string|max:255',
-                'department_status'      =>  'required|bool'
+                'pathology_department_name'        =>  'required|string|max:100|unique:Pathology_departments,pathology_department_name',
+                'pathology_department_note'        =>  'required|string|max:255',
+                'pathology_department_status'      =>  'required|bool'
             );
         }
 
@@ -58,9 +59,9 @@ class PathologyDepartmentController extends Controller
         }
 
         $form_data = array(
-            'department_name'         => request('department_name'),
-            'department_note'         => request('department_note'),
-            'department_status'       => request('department_status'),
+            'pathology_department_name'         => request('pathology_department_name'),
+            'pathology_department_note'         => request('pathology_department_note'),
+            'pathology_department_status'       => request('pathology_department_status'),
             'user_id'                           => Auth::user()->id
         );  
         
@@ -84,16 +85,16 @@ class PathologyDepartmentController extends Controller
         $department = PathologyDepartment::findOrFail($id);
         if(empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:Pathology_departments,department_name,'.$department->id,
-                'department_status'      =>  'required|bool'
+                'pathology_department_name'        =>  'required|string|max:100|unique:Pathology_departments,pathology_department_name,'.$department->id,
+                'pathology_department_status'      =>  'required|bool'
             );
         }
 
         if(!empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:Pathology_departments,department_name,'.$department->id,
-                'department_note'        =>  'required|string|max:255',
-                'department_status'      =>  'required|bool'
+                'pathology_department_name'        =>  'required|string|max:100|unique:Pathology_departments,pathology_department_name,'.$department->id,
+                'pathology_department_note'        =>  'required|string|max:255',
+                'pathology_department_status'      =>  'required|bool'
             );
         }
 
@@ -105,9 +106,9 @@ class PathologyDepartmentController extends Controller
         }
 
         $update_data = array(
-            'department_name'           => request('department_name'),
-            'department_note'           => request('department_note'),
-            'department_status'         => request('department_status'),
+            'pathology_department_name'           => request('pathology_department_name'),
+            'pathology_department_note'           => request('pathology_department_note'),
+            'pathology_department_status'         => request('pathology_department_status'),
             'user_id'                   => Auth::user()->id
         );
         

@@ -1,11 +1,10 @@
-@extends('layouts.master')
-@section('title','Pathology Departments')
-@section('departments','active')
-@section('pathology_departments','active')
-@section('template_css')
+<?php $__env->startSection('title','Pathology Departments'); ?>
+<?php $__env->startSection('departments','active'); ?>
+<?php $__env->startSection('pathology_departments','active'); ?>
+<?php $__env->startSection('template_css'); ?>
 
-@endsection
-@section('content')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <section class="section">
 	<div class="section-body">
 		<div class="row mt-3">
@@ -58,7 +57,7 @@
             <form id="add_form" method="post">
                 <div class="modal-body">
                     <input type="hidden" name="_method" value="POST">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="pathology_department_name">Pathology Department Name<span class="text-danger">&nbsp;*</span></label>
@@ -109,7 +108,7 @@
             <form id="update_form">
                 <div class="modal-body">
                     <input type="hidden" name="_method" value="PUT">
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
                     <input type="hidden" id="update_id" name="update_id">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -155,7 +154,7 @@
         <div class="modal-body">
             <form id="delete_form">
                 <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
                 <input type="hidden" id="delete_id" name="delete_id">
                 <div class="modal-content">
                 <div class="modal-header bg-indigo">
@@ -175,12 +174,10 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('page_js')
-{{--  <script src="{{ asset('assets/bundles/datatables/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('assets/js/page/datatables.js') }}"></script>  --}}
+<?php $__env->startSection('page_js'); ?>
+
 
 <script>
     $.ajaxSetup({
@@ -196,7 +193,7 @@
             processing: false,
             serverSide: true,
             ajax: {
-                url: "{{ route('pathologyDepartments') }}",
+                url: "<?php echo e(route('pathologyDepartments')); ?>",
             },
             columns: [
                 {
@@ -236,7 +233,7 @@
         $('#add_form').on('submit', function(event){
             event.preventDefault();
             var action_url = '';
-            action_url = "{{ route('pathologyDepartments.store') }}";
+            action_url = "<?php echo e(route('pathologyDepartments.store')); ?>";
             $.ajax({
                 url: action_url,
                 method:"POST",
@@ -280,7 +277,7 @@
 
         $(document).on('click', '.edit', function(){
             var id = $(this).attr('id');
-            var url = '{{ route("pathologyDepartments.edit",":id") }}';
+            var url = '<?php echo e(route("pathologyDepartments.edit",":id")); ?>';
             url = url.replace(':id',id);
             $('#update_result').html('');
             $.ajax({
@@ -306,7 +303,7 @@
             var update_url = '';
             var update_id = '';
             update_id = $('#update_id').val();
-            update_url = '{{ route("pathologyDepartments.update",":update_id") }}';
+            update_url = '<?php echo e(route("pathologyDepartments.update",":update_id")); ?>';
             update_url = update_url.replace(':update_id',update_id);
             $.ajax({
                 url: update_url,
@@ -360,7 +357,7 @@
 
         $('#ok_button').click(function(){
             var del_id = $('#delete_id').val();
-            var del_url = '{{ route("pathologyDepartments.destroy",":del_id") }}';
+            var del_url = '<?php echo e(route("pathologyDepartments.destroy",":del_id")); ?>';
             del_url = del_url.replace(':del_id',id);
 
             $.ajax({
@@ -391,4 +388,5 @@
         });
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\renaissa-hospital\resources\views/admin/pages/departments/pathology_departments.blade.php ENDPATH**/ ?>

@@ -1,18 +1,17 @@
-@extends('layouts.master')
-@section('title','List Patient Payment')
-@section('patient_payment','active')
-@section('patient_payment_list','active')
-@section('template_css')
+<?php $__env->startSection('title','List Doctor Payment'); ?>
+<?php $__env->startSection('doctor_income_history','active'); ?>
+<?php $__env->startSection('doctor_income_history_list','active'); ?>
+<?php $__env->startSection('template_css'); ?>
 
-@endsection
-@section('content')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <section class="section">
     <div class="section-body">
       <div class="row">
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h4>Patient Payment List</h4>
+              <h4>Doctor Income History</h4>
               <div class="btn-group ml-auto">
                 <a href="javascript:history.back()" class="btn btn-danger text-white mr-2"><i class="fas fa-arrow-left mr-2"></i>Back</a>
               </div>
@@ -20,86 +19,84 @@
             <div class="card-body">
               <form id="search_form" autocomplete="off">
                 <input type="hidden" name="_method" id="method" value="POST">
-                <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_token" id="token" value="<?php echo e(csrf_token()); ?>">
+                <input type="hidden" name="doctor_id" id="doctor_id">
                 <div class="row py-2 mb-3" style="border: 1px dashed #333">
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <div class="form-group">
                       <label for="from_date">From Date</label>
-                      <input type="date" id="from_date" name="from_date" value="{{ old('from_date') }}" class="form-control" placeholder="-----">
+                      <input type="date" id="from_date" name="from_date" value="<?php echo e(old('from_date')); ?>" class="form-control">
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <div class="form-group">
                       <label for="to_date">To Date</label>
-                      <input type="date" id="to_date" name="to_date" value="{{ old('to_date') }}" class="form-control" placeholder="-----">
+                      <input type="date" id="to_date" name="to_date" value="<?php echo e(old('to_date')); ?>" class="form-control" placeholder="dd-mm-yyyy">
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  
+                  <div class="col-md-4">
                     <div class="form-group">
-                      <button id="search" type="submit" class="btn btn-primary btn-wave text-white m-t-20" type="button">Search</button>
+                      <label for="doctor_name">Doctor Name</label>
+                      <input type="text" id="doctor_name" name="doctor_name" value="<?php echo e(old('doctor_name')); ?>" class="form-control" placeholder="-----">
+                      <div id="doctor_search_result" class="search-box" style="display:none"></div>
                     </div>
-                  </div> 
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <button class="btn btn-primary btn-wave text-white m-t-20" type="submit" id="search">Search</button>
+                    </div>
+                  </div>
                 </div>
               </form>
               <div class="row">
                 <div class="table-responsive">
                   <table class="table table-striped table-hover" id="example" style="width:100%;">
                     <thead>
-                      <tr class="text-center" id="total_count">{!!$total_count!!}</tr>
+                      <tr class="text-center" id="total_count">
+                        <?php echo $total_count; ?>
+
+                      </tr>
                       <tr class="text-center">
                         <th>#SL</th>
-                        <th>Payment&nbsp;Date</th>
+                        <th>Invoice&nbsp;Date</th>
                         <th>Invoice&nbsp;No</th>
-                        <th>Invoice&nbsp;Type</th>
-                        <th class="sum">Paid&nbsp;Amount</th>
-                        <th class="">Due&nbsp;Amount</th>
-                        <th>Status</th>
+                        <th>Doctor</th>
+                        <th>Income&nbsp;Type</th>
+                        <th class="sum">Income&nbsp;Amount</th>
+                        <th class="sum">Commission</th>
                       </tr>
                     </thead>
                     <tbody id="custom_table">
-                      @foreach($patient_payments as $i=>$list)
+                      <?php $__currentLoopData = $doctor_income_histories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i=>$list): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <tr class="text-center">
-                          <td>{{$i+1}}</td>
-                          <td>{{$list->payment_date}}</td>
-                          <td>{{$list->invoice->invoice_no}}</td>
+                          <td><?php echo e($i+1); ?></td>
+                          <td><?php echo e($list->invoice_date); ?></td>
+                          <td><?php echo e($list->invoice_no); ?></td>
+                          <td><?php echo e($list->doctor->name); ?></td>
                           <td>
-                            @if($list->invoice->prescription_ticket_id != null)
-                                <span class="badge-outline col-indigo">Prescription</span>
-                            @else
-                                <span class="badge-outline col-purple">Pathology Test</span>
-                            @endif
+                            <?php if($list->prescription_ticket_id != null): ?>
+                              <span class="badge-outline col-indigo">Prescription</span>
+                            <?php else: ?>
+                              <span class="badge-outline col-purple">Pathology&nbsp;Test</span>
+                            <?php endif; ?>
                           </td>
-                          <td>{{$list->paid_amount}}</td>
-                          <td>{{$list->due_amount}}</td>
+                          <td><?php echo e($list->doctor_income_amount); ?></td>
                           <td>
-                            
-                            @if($list->due_amount == 0)
-                              
-                              <span class="btn btn-outline-success"><i class="fa fa-check" aria-hidden="true"></i></span>
-                            @else
-                              @php
-                              $payment_check = App\Models\PatientPayment::where('invoice_id', $list->invoice_id)->orderBy('id','desc')->first();
-                          
-                              @endphp
-                              @if($payment_check->due_amount == 0)
-                              <span class="btn btn-outline-success"><i class="fa fa-check" aria-hidden="true"></i></span>
-                              @else
-                              <a type="button" id="make_payment_btn" data-id="{{$list->invoice_id}}" data-due="{{$list->due_amount}}" data-invoice="{{$list->invoice->invoice_no}}" class="btn btn-outline-info">Make Payment</a>
-                              @endif
-                            @endif
+                            <?php if($list->doctor->type == 3 || $list->doctor->type == 1): ?><span class="badge-outline col-red">not applicable! <?php else: ?> <?php echo e($list->doctor_payable_amount); ?> <?php endif; ?>
                           </td>
                       </tr>
-                      @endforeach
+                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                     <tfoot id="table_footer" style="background: #F0F3FF">
                       <tr class="text-center">
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th>Column Total :</th>
-                        <th class="Int"></th>
-                        <th class=""></th>
                         <th></th>
+                        <th>Column Total: </th>
+                        <th class="Int"></th>
+                        <th class="Int"></th>
                       </tr>
                     </tfoot>
                   </table>
@@ -115,13 +112,13 @@
 <!-- payment modal -->
 <div class="modal fade" id="payment_modal" tabindex="-1" role="dialog" aria-labelledby="payment_modal" aria-hidden="true">
   <div class="modal-dialog modal-xs" role="document">
-    <form action="{{ route("patientPayment.store") }}" method="POST">
-      @csrf
+    <form id="payment_form" method="POST">
+      <?php echo csrf_field(); ?>
       <input type="hidden" name="payment_id" id="payment_id">
       <input type="hidden" name="invoice_no" id="invoice_no">
       <div class="modal-content">
         <div class="modal-header bg-indigo">
-          <h5 class="modal-title" id="payment_modal">Make Payment For <span class="ml-2" id="title_invoice_no"></span></h5>
+          <h5 class="modal-title" id="payment_modal">Make Payment For <span class="" id="make_pament_inv">#INV1312124</span></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -162,13 +159,14 @@
     </form>		
   </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('page_js')
+<?php $__env->startSection('page_js'); ?>
+
 
 <script>
   $(document).ready(function(){
-
+    
     $.ajaxSetup({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -196,9 +194,8 @@
       var due_amount = $(this).data('due');
       var invoice_no = $(this).data('invoice');
 
-      $('#payment_modal #payment_id').val(payment_id);
-      $('#payment_modal #invoice_no').val(invoice_no);
-      $('#payment_modal #title_invoice_no').text(invoice_no);
+      $('#payment_id').val(payment_id);
+      $('#invoice_no').val(invoice_no);
     
       payment_modal.modal('show');
       $('#due_amount').val(due_amount);
@@ -207,7 +204,54 @@
         calc_total();
       });
     });
- 
+
+    $('#payment_form').on('submit', function(event){
+      event.preventDefault()
+      var url = '<?php echo e(route("patientPayment.store")); ?>'
+      var data = $(this).serialize();
+
+      $.ajax({
+        url:url,
+        method: "POST",
+        data: data,
+        dataType:"json",
+        beforeSend:function(){
+          payment_modal.find('.modal-title').text('Sending ...')
+          payment_button.addClass('btn-progress');
+        },
+
+        success:function(data)
+        {
+          if(data.errors)
+          {
+            for(var count = 0; count < data.errors.length; count++)
+            {
+              iziToast.error({
+                title: 'Error!',
+                message: data.errors[count],
+                position: 'topRight'
+              });
+            }
+            payment_button.removeClass('btn-progress');
+            payment_modal.find('.modal-title').text('Error')
+          }
+          if(data.success)
+          {
+            setTimeout(function(){
+              iziToast.success({
+                title: 'Success!',
+                message: data.success,
+                position: 'topRight'
+              })
+                payment_modal.find('.modal-title').text('Successful');
+                payment_form[0].reset();
+                payment_button.removeClass('btn-progress');
+                $('#patient_payment_table').DataTable().ajax.reload();
+            }, 1000);
+          }    
+        }
+      })
+    });
 
     function calc_total(){
       // var cash_received =0;
@@ -224,22 +268,58 @@
       if(return_amount<0){
         $('#return_amount').val('0');
       }
-    };
+    }
 
     var search_form = $('#search_form');
     var search_button = $('#search');
     search_button.removeClass('btn-progress');
+    //doctor search
+    $('#doctor_name').on('keyup',function(){
+      $('#doctor_search_result').css('display','none');
+
+      var action_url = "<?php echo e(route('customSearch.doctorSearch')); ?>";
+      var value=$(this).val();
+      if(value.length >= '2'){
+        $.ajax({
+          type : 'get',
+          url : action_url,
+          data:{'search':value},
+
+          success:function(data){
+            console.log(data);
+            $('#doctor_search_result').css('display','block');
+            $('#doctor_search_result').html(data);
+          }
+        });
+      }
+      else{
+        $('#doctor_search_result').html('');
+        $('#doctor_search_result').css('display','none');
+      }
+
+    });
+
+    //select doctor
+    $(document).on('click', '#add_doctor', function(){
+      var doctor_id = $(this).data('doctor_id');
+      var doctor_name = $(this).data('doctor_name');
+      $('#search_form #doctor_id').val(doctor_id);
+      $('#search_form #doctor_name').val(doctor_name);
+      $('#search_form #doctor_search_result').html('');
+      $('#search_form #doctor_search_result').css('display','none');
+    });
 
     search_form.on('submit', function(event){
       event.preventDefault();
-      var url = '{{ route("patientPaymentCustomSearch") }}';
+      var url = '<?php echo e(route("doctorIncomeCustomSearch.search")); ?>';
       var from_date = $('#search_form #from_date').val();
       var to_date = $('#search_form #to_date').val();
-
+      var doctor_id = $('#search_form #doctor_id').val();
+  
       $.ajax({
         url:url,
         method: "POST",
-        data: {from_date:from_date, to_date:to_date},
+        data: {from_date:from_date, to_date:to_date, doctor_id:doctor_id},
         beforeSend:function(){
           search_button.addClass('btn-progress');
           $("#custom_table").html('');
@@ -250,9 +330,12 @@
           $("#table_footer").addClass('d-none');
         },
         success:function(data){
+        
           if(data.errors){
             $('#search_form #from_date').val('');
             $('#search_form #to_date').val('');
+            $('#search_form #doctor_id').val('');
+            $('#search_form #doctor_name').val('');
             $('#example').DataTable().clear().destroy();
             $("#total_count").addClass('d-none');
             $("#custom_table").addClass('d-none');
@@ -277,6 +360,8 @@
 
             $('#search_form #from_date').val('');
             $('#search_form #to_date').val('');
+            $('#search_form #doctor_id').val('');
+            $('#search_form #doctor_name').val('');
           }, 1000);
         }//end success
           
@@ -284,72 +369,12 @@
 
     });//end submit
 
-    function dataTableFooter(){
-      var table = $("#example").DataTable({
-        "initComplete": function (settings, json) {
-          var api = this.api();
-          CalculateTableSummary(this);
-        },
-
-        "footerCallback": function ( row, data, start, end, display ) {
-          var api = this.api(), data;	 
-          CalculateTableSummary(this);
-          return ;		
-        }
-      });
-    }
-
-    // datatable sum functions
-    function CalculateTableSummary(table) {
-      try {
-        var intVal = function (i) {
-        return typeof i === 'string' ?
-          i.replace(/[\$,]/g, '') * 1 :
-          typeof i === 'number' ?
-          i : 0;
-        };
-
-        var api = table.api();
-        api.columns(".sum").eq(0).each(function (index) {
-          var column = api.column(index,{page:'current'});
-          var sum = column
-          .data()
-          .reduce(function (a, b) {
-            if(isNaN(a)){
-              return '';
-            }
-            if(isNaN(b)){
-              return '';
-            }
-          //return parseInt(a, 10) + parseInt(b, 10);
-          return intVal(a) + intVal(b);
-        }, 0);
-              
-        // if(sum==0){
-        //   $('.table tfoot').hide();
-        // }
-        // else{
-        //   $('.table tfoot').show();
-        // }
-        if ($(column.footer()).hasClass("Int")) {
-          $(column.footer()).html('' + sum);
-        } else {
-          $(column.footer()).html('' + sum);
-        }
-        
-      });
-      } catch (e) {
-        console.log('Error in CalculateTableSummary');
-        console.log(e)
-      }
-    }
-    
     //datatable
     dataTableFooter();
-    
-
-  }); //ready
+  })
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
 
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\renaissa-hospital\resources\views/admin/pages/doctor_income_history/list.blade.php ENDPATH**/ ?>

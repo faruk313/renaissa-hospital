@@ -1,11 +1,10 @@
-@extends('layouts.master')
-@section('title','List Patient Payment')
-@section('patient_payment','active')
-@section('patient_payment_list','active')
-@section('template_css')
+<?php $__env->startSection('title','List Patient Payment'); ?>
+<?php $__env->startSection('patient_payment','active'); ?>
+<?php $__env->startSection('patient_payment_list','active'); ?>
+<?php $__env->startSection('template_css'); ?>
 
-@endsection
-@section('content')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <section class="section">
     <div class="section-body">
       <div class="row">
@@ -20,18 +19,18 @@
             <div class="card-body">
               <form id="search_form" autocomplete="off">
                 <input type="hidden" name="_method" id="method" value="POST">
-                <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_token" id="token" value="<?php echo e(csrf_token()); ?>">
                 <div class="row py-2 mb-3" style="border: 1px dashed #333">
                   <div class="col-md-3">
                     <div class="form-group">
                       <label for="from_date">From Date</label>
-                      <input type="date" id="from_date" name="from_date" value="{{ old('from_date') }}" class="form-control" placeholder="-----">
+                      <input type="date" id="from_date" name="from_date" value="<?php echo e(old('from_date')); ?>" class="form-control" placeholder="-----">
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div class="form-group">
                       <label for="to_date">To Date</label>
-                      <input type="date" id="to_date" name="to_date" value="{{ old('to_date') }}" class="form-control" placeholder="-----">
+                      <input type="date" id="to_date" name="to_date" value="<?php echo e(old('to_date')); ?>" class="form-control" placeholder="-----">
                     </div>
                   </div>
                   <div class="col-md-3">
@@ -45,7 +44,7 @@
                 <div class="table-responsive">
                   <table class="table table-striped table-hover" id="example" style="width:100%;">
                     <thead>
-                      <tr class="text-center" id="total_count">{!!$total_count!!}</tr>
+                      <tr class="text-center" id="total_count"><?php echo $total_count; ?></tr>
                       <tr class="text-center">
                         <th>#SL</th>
                         <th>Payment&nbsp;Date</th>
@@ -57,39 +56,39 @@
                       </tr>
                     </thead>
                     <tbody id="custom_table">
-                      @foreach($patient_payments as $i=>$list)
+                      <?php $__currentLoopData = $patient_payments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i=>$list): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <tr class="text-center">
-                          <td>{{$i+1}}</td>
-                          <td>{{$list->payment_date}}</td>
-                          <td>{{$list->invoice->invoice_no}}</td>
+                          <td><?php echo e($i+1); ?></td>
+                          <td><?php echo e($list->payment_date); ?></td>
+                          <td><?php echo e($list->invoice->invoice_no); ?></td>
                           <td>
-                            @if($list->invoice->prescription_ticket_id != null)
+                            <?php if($list->invoice->prescription_ticket_id != null): ?>
                                 <span class="badge-outline col-indigo">Prescription</span>
-                            @else
+                            <?php else: ?>
                                 <span class="badge-outline col-purple">Pathology Test</span>
-                            @endif
+                            <?php endif; ?>
                           </td>
-                          <td>{{$list->paid_amount}}</td>
-                          <td>{{$list->due_amount}}</td>
+                          <td><?php echo e($list->paid_amount); ?></td>
+                          <td><?php echo e($list->due_amount); ?></td>
                           <td>
                             
-                            @if($list->due_amount == 0)
+                            <?php if($list->due_amount == 0): ?>
                               
                               <span class="btn btn-outline-success"><i class="fa fa-check" aria-hidden="true"></i></span>
-                            @else
-                              @php
+                            <?php else: ?>
+                              <?php
                               $payment_check = App\Models\PatientPayment::where('invoice_id', $list->invoice_id)->orderBy('id','desc')->first();
                           
-                              @endphp
-                              @if($payment_check->due_amount == 0)
+                              ?>
+                              <?php if($payment_check->due_amount == 0): ?>
                               <span class="btn btn-outline-success"><i class="fa fa-check" aria-hidden="true"></i></span>
-                              @else
-                              <a type="button" id="make_payment_btn" data-id="{{$list->invoice_id}}" data-due="{{$list->due_amount}}" data-invoice="{{$list->invoice->invoice_no}}" class="btn btn-outline-info">Make Payment</a>
-                              @endif
-                            @endif
+                              <?php else: ?>
+                              <a type="button" id="make_payment_btn" data-id="<?php echo e($list->invoice_id); ?>" data-due="<?php echo e($list->due_amount); ?>" data-invoice="<?php echo e($list->invoice->invoice_no); ?>" class="btn btn-outline-info">Make Payment</a>
+                              <?php endif; ?>
+                            <?php endif; ?>
                           </td>
                       </tr>
-                      @endforeach
+                      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                     <tfoot id="table_footer" style="background: #F0F3FF">
                       <tr class="text-center">
@@ -115,8 +114,8 @@
 <!-- payment modal -->
 <div class="modal fade" id="payment_modal" tabindex="-1" role="dialog" aria-labelledby="payment_modal" aria-hidden="true">
   <div class="modal-dialog modal-xs" role="document">
-    <form action="{{ route("patientPayment.store") }}" method="POST">
-      @csrf
+    <form action="<?php echo e(route("patientPayment.store")); ?>" method="POST">
+      <?php echo csrf_field(); ?>
       <input type="hidden" name="payment_id" id="payment_id">
       <input type="hidden" name="invoice_no" id="invoice_no">
       <div class="modal-content">
@@ -162,9 +161,9 @@
     </form>		
   </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('page_js')
+<?php $__env->startSection('page_js'); ?>
 
 <script>
   $(document).ready(function(){
@@ -232,7 +231,7 @@
 
     search_form.on('submit', function(event){
       event.preventDefault();
-      var url = '{{ route("patientPaymentCustomSearch") }}';
+      var url = '<?php echo e(route("patientPaymentCustomSearch")); ?>';
       var from_date = $('#search_form #from_date').val();
       var to_date = $('#search_form #to_date').val();
 
@@ -350,6 +349,8 @@
 
   }); //ready
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
 
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\renaissa-hospital\resources\views/admin/pages/patient_payment/list.blade.php ENDPATH**/ ?>

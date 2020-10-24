@@ -4,8 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\Models\DoctorDepartment;
-
+use DataTables;
 use Auth;
+use Validator;
 
 class DoctorDepartmentController extends Controller
 {
@@ -20,15 +21,15 @@ class DoctorDepartmentController extends Controller
     {
        
         $request->validate([
-            'doctor_department_name'        =>  'required|string|max:100|unique:doctor_departments,department_name',
+            'doctor_department_name'        =>  'required|string|max:100|unique:doctor_departments,doctor_department_name',
             'doctor_department_status'      =>  'required|bool'
         ]);
     
 
         $form_data = array(
-            'department_name'               => request('doctor_department_name'),
-            'department_note'               => request('doctor_department_note'),
-            'department_status'             => request('doctor_department_status'),
+            'doctor_department_name'               => request('doctor_department_name'),
+            'doctor_department_note'               => request('doctor_department_note'),
+            'doctor_department_status'             => request('doctor_department_status'),
             'user_id'                       => Auth::user()->id
         );
         
@@ -54,16 +55,16 @@ class DoctorDepartmentController extends Controller
         $department = DoctorDepartment::findOrFail($id);
         if(empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:doctor_departments,doctor_department_name,'.$department->id,
-                'department_status'      =>  'required|bool'
+                'doctor_department_name'        =>  'required|string|max:100|unique:doctor_departments,doctor_department_name,'.$department->id,
+                'doctor_department_status'      =>  'required|bool'
             );
         }    
            
         if(!empty(request('department_note'))){
             $rules = array(
-                'department_name'        =>  'required|string|max:100|unique:doctor_departments,department_name,'.$department->id,
-                'department_note'        =>  'required|string|max:255',
-                'department_status'      =>  'required|bool'
+                'doctor_department_name'        =>  'required|string|max:100|unique:doctor_departments,doctor_department_name,'.$department->id,
+                'doctor_department_note'        =>  'required|string|max:255',
+                'doctor_department_status'      =>  'required|bool'
             );
         }
        
@@ -75,9 +76,9 @@ class DoctorDepartmentController extends Controller
         }
 
         $update_data = array(
-            'department_name'        => request('department_name'),
-            'department_note'        => request('department_note'),
-            'department_status'      => request('department_status'),
+            'doctor_department_name'        => request('doctor_department_name'),
+            'doctor_department_note'        => request('doctor_department_note'),
+            'doctor_department_status'      => request('doctor_department_status'),
             'user_id'                       => Auth::user()->id
         );
         

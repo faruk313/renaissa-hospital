@@ -8,7 +8,7 @@ class Broker extends Model
 {
     protected $fillable =
     [
-        'broker_uid',
+        'broker_id',
         'broker_name',
         'broker_mobile',
         'broker_note',

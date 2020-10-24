@@ -20,7 +20,7 @@
 					</div>
 					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-striped table-hover table-condensed" id="roomTable" style="width: 100%">
+							<table class="table table-striped table-hover" id="roomTable" style="width: 100%">
 								<thead>
 									<tr class="text-center">
 										<th>#SL</th>

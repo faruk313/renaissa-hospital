@@ -1,10 +1,9 @@
-@extends('layouts.master')
-@section('title','Pathology Test Lists')
-@section('tests','active')
-@section('template_css')
+<?php $__env->startSection('title','Pathology Test Lists'); ?>
+<?php $__env->startSection('tests','active'); ?>
+<?php $__env->startSection('template_css'); ?>
 
-@endsection
-@section('content')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
 <section class="section">
 	<div class="section-body">
 		<div class="row mt-3">
@@ -75,18 +74,18 @@
             <form id="add_form">
                 <div class="modal-body">
                     <input type="hidden" name="_method" id="method" value="POST">
-                    <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_token" id="token" value="<?php echo e(csrf_token()); ?>">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_code">Test Code<span class="text-danger">&nbsp;*</span></label>
-                                <input type="text" name="test_code" id="test_code" class="form-control" value="{{old('test_code')}}" placeholder="Code ..." required="">
+                                <input type="text" name="test_code" id="test_code" class="form-control" value="<?php echo e(old('test_code')); ?>" placeholder="Code ..." required="">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="test_name">Test Name<span class="text-danger">&nbsp;*</span></label>
-                                <input type="text" name="test_name" id="test_name" class="form-control" value="{{old('test_name')}}" placeholder="Name ..." required="">
+                                <input type="text" name="test_name" id="test_name" class="form-control" value="<?php echo e(old('test_name')); ?>" placeholder="Name ..." required="">
                             </div>
                         </div>
                         <div class="col-md-3 px-1">
@@ -94,9 +93,9 @@
                                 <label for="test_room">Sample Collection Room<span class="text-danger">&nbsp;*</span></label>
                                 <select class="form-control selectric" name="test_room" id="test_room" required="" style="height: :40px">
                                     <option selected disabled>Select Room</option>
-                                    @foreach ($rooms as $room)
-                                        <option value="{{ $room->code }}">{{ $room->code }}</option>
-                                    @endforeach
+                                    <?php $__currentLoopData = $rooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $room): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($room->code); ?>"><?php echo e($room->code); ?></option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </select>
                             </div>
                         </div>
@@ -105,32 +104,32 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_price">Unit&nbsp;Price&nbsp;(BDT)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="test_price" id="test_price" class="form-control" value="{{old('test_price')}}" placeholder="Tk." min="0" required="">
+                                <input type="number" name="test_price" id="test_price" class="form-control" value="<?php echo e(old('test_price')); ?>" placeholder="Tk." min="0" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="patient_discount">Patient Discount&nbsp;(%)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="patient_discount" id="patient_discount" class="form-control" value="{{old('patient_discount')}}" placeholder="%" min="0" max="100" required="">
+                                <input type="number" name="patient_discount" id="patient_discount" class="form-control" value="<?php echo e(old('patient_discount')); ?>" placeholder="%" min="0" max="100" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="doctor_discount">Doctor Discount&nbsp;(%)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="doctor_discount" id="doctor_discount" class="form-control" value="{{old('doctor_discount')}}" placeholder="%" min="0" max="100" required="">
+                                <input type="number" name="doctor_discount" id="doctor_discount" class="form-control" value="<?php echo e(old('doctor_discount')); ?>" placeholder="%" min="0" max="100" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_duration">Delivery&nbsp;Time&nbsp;(Days)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="test_duration" id="test_duration" class="form-control" value="{{old('test_duration')}}" placeholder="Days .." min="0" max="30" required="">
+                                <input type="number" name="test_duration" id="test_duration" class="form-control" value="<?php echo e(old('test_duration')); ?>" placeholder="Days .." min="0" max="30" required="">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-8">
                             <label for="test_suggestion">Test Suggestion (If Any)</label>
-                            <textarea name="test_suggestion" class="form-control" id="test_suggestion" placeholder="Test Suggestion">{{old('test_suggestion')}}</textarea>
+                            <textarea name="test_suggestion" class="form-control" id="test_suggestion" placeholder="Test Suggestion"><?php echo e(old('test_suggestion')); ?></textarea>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
@@ -169,19 +168,19 @@
             <form id="edit_form">
                 <div class="modal-body">
                     <input type="hidden" name="_method" id="method" value="POST">
-                    <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_token" id="token" value="<?php echo e(csrf_token()); ?>">
                     <input type="hidden" name="update_id" id="update_id" value="">
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_code">Test Code<span class="text-danger">&nbsp;*</span></label>
-                                <input type="text" name="test_code" id="test_code" class="form-control" value="{{old('test_code')}}" placeholder="Code ..." required="">
+                                <input type="text" name="test_code" id="test_code" class="form-control" value="<?php echo e(old('test_code')); ?>" placeholder="Code ..." required="">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="test_name">Test Name<span class="text-danger">&nbsp;*</span></label>
-                                <input type="text" name="test_name" id="test_name" class="form-control" value="{{old('test_name')}}" placeholder="Name ..." required="">
+                                <input type="text" name="test_name" id="test_name" class="form-control" value="<?php echo e(old('test_name')); ?>" placeholder="Name ..." required="">
                             </div>
                         </div>
                         <div class="col-md-3 px-1">
@@ -196,25 +195,25 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_price">Unit Price (BDT)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="test_price" id="test_price" class="form-control" value="{{old('test_price')}}" placeholder="Tk." min="0" required="">
+                                <input type="number" name="test_price" id="test_price" class="form-control" value="<?php echo e(old('test_price')); ?>" placeholder="Tk." min="0" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="patient_discount">Patient Discount (%)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="patient_discount" id="patient_discount" class="form-control" value="{{old('patient_discount')}}" placeholder="%" min="0" max="100" required="">
+                                <input type="number" name="patient_discount" id="patient_discount" class="form-control" value="<?php echo e(old('patient_discount')); ?>" placeholder="%" min="0" max="100" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="doctor_discount">Doctor Discount (%)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="doctor_discount" id="doctor_discount" class="form-control" value="{{old('doctor_discount')}}" placeholder="%" min="0" max="100" required="">
+                                <input type="number" name="doctor_discount" id="doctor_discount" class="form-control" value="<?php echo e(old('doctor_discount')); ?>" placeholder="%" min="0" max="100" required="">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="test_duration">Delivery Time (Days)<span class="text-danger">&nbsp;*</span></label>
-                                <input type="number" name="test_duration" id="test_duration" class="form-control" value="{{old('test_duration')}}" placeholder="Days" min="0" max="30" required="">
+                                <input type="number" name="test_duration" id="test_duration" class="form-control" value="<?php echo e(old('test_duration')); ?>" placeholder="Days" min="0" max="30" required="">
                             </div>
                         </div>
                         
@@ -222,7 +221,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <label for="test_suggestion">Test Suggestion (If Any)</label>
-                            <textarea name="test_suggestion" class="form-control" id="test_suggestion" placeholder="Test Suggestion">{{old('test_suggestion')}}</textarea>
+                            <textarea name="test_suggestion" class="form-control" id="test_suggestion" placeholder="Test Suggestion"><?php echo e(old('test_suggestion')); ?></textarea>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
@@ -253,7 +252,7 @@
         <div class="modal-content">
             <form id="confirm_form">
                 <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
                 <input type="hidden" id="delete_id" name="delete_id">
                 <div class="modal-header bg-indigo">
                     <h5 class="modal-title" id="confirm_modal"></h5>
@@ -272,9 +271,9 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('page_js')
+<?php $__env->startSection('page_js'); ?>
 
 <script>
     $.ajaxSetup({
@@ -324,7 +323,7 @@
             responsive: true,
             dom: '<"toolbar">frtip',
             ajax: {
-                url: "{{ route('pathologyTests') }}",
+                url: "<?php echo e(route('pathologyTests')); ?>",
             },
            
             columns: [
@@ -343,7 +342,7 @@
             var rooms =''
 
             var id = $(this).data('id');
-            var url = '{{ route("pathologyTests.view",":id") }}';
+            var url = '<?php echo e(route("pathologyTests.view",":id")); ?>';
             url = url.replace(':id',id);
 
             $.ajax({
@@ -439,7 +438,7 @@
 
         $('#add_form').on('submit', function(event){
             event.preventDefault()
-            var url = '{{ route("pathologyTests.store") }}'
+            var url = '<?php echo e(route("pathologyTests.store")); ?>'
             $.ajax({
                 url:url,
                 method: "POST",
@@ -498,7 +497,7 @@
             ok_update.hide()
             edit_modal.find('.modal-title').text('Update Pathology Test')
             var id = $(this).data('id');
-            var url = '{{ route("pathologyTests.edit",":id") }}';
+            var url = '<?php echo e(route("pathologyTests.edit",":id")); ?>';
             url = url.replace(':id',id);
 
             $.ajax({
@@ -550,7 +549,7 @@
         $('#edit_form').on('submit', function(event){
             event.preventDefault()
             var update_id = $('#edit_form #update_id').val();
-            var update_url = '{{ route("pathologyTests.update",":update_id") }}';
+            var update_url = '<?php echo e(route("pathologyTests.update",":update_id")); ?>';
             update_url = update_url.replace(':update_id',update_id);
 
             $.ajax({
@@ -606,7 +605,7 @@
             confirm_modal.modal('show')
             var id = $(this).data('id');
             confirm_button.click(function(){
-                var url = '{{ route("pathologyTests.destroy",":id") }}';
+                var url = '<?php echo e(route("pathologyTests.destroy",":id")); ?>';
                 url = url.replace(':id',id);
                 $.ajax({
                     url:url,
@@ -637,4 +636,5 @@
 
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\renaissa-hospital\resources\views/admin/pages/pathology_tests/pathology_test_lists.blade.php ENDPATH**/ ?>

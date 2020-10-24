@@ -14,14 +14,14 @@
                         <h4 class="float-left">Rooms/Chambers</h4>
                         <div class="btn-group ml-auto">
                             <a href="javascript:history.back()" class="btn btn-danger text-white mr-2"><i class="fas fa-arrow-left mr-2"></i>Back</a>
-                            <a type="button" id="add_new" class="btn btn-primary text-white ml-auto float-right">
+                            <a type="button" id="add" class="btn btn-primary text-white ml-auto float-right">
                                 <i class="fas fa-plus"></i>&nbsp;Add New
                             </a>
                         </div>
 					</div>
 					<div class="card-body">
 						<div class="table-responsive">
-							<table class="table table-striped table-hover" id="roomTable" style="width: 100%">
+							<table class="table table-striped table-hover" id="save-stage" style="width: 100%">
 								<thead>
 									<tr class="text-center">
 										<th>#SL</th>
@@ -29,10 +29,38 @@
 										<th>Code</th>
 										<th>Note</th>
 										<th>Status</th>
-										<th>Actions</th>
+										<th data-sortable="false">Actions</th>
 									</tr>
                                 </thead>
-								<tbody class="text-center">
+								<tbody>
+                                    @if ($rooms->count()>0)
+                                        @foreach ($rooms as $i=>$room)
+                                            <tr  class="text-center">
+                                                <td>{{ $i+1 }}</td>
+                                                <td>
+                                                    @if($room->type == 1)
+                                                        <span class="badge-outline col-blue">Pathology</span>
+                                                    @endif 
+                                                    @if($room->type == 2)
+                                                        <span class="badge-outline col-purple">Doctor</span>
+                                                    @endif 
+                                                </td>
+                                                <td>{{ $room->code }}</td>
+                                                <td>{{ $room->note }}</td>
+                                                <td>
+                                                    @if($room->status == 1)
+                                                        <span class="badge-outline col-green">Active</span>
+                                                    @endif 
+                                                    @if($room->status == 0)
+                                                        <span class="badge-outline col-red">Inactive</span>
+                                                    @endif 
+                                                </td>
+                                                <td>
+                                                    <a type="button" id="edit" data-id="{{ $room->id }}" class="edit"><i class="fas fa-pencil-alt text-info"></i></a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
 								</tbody>
 							</table>
 						</div>
@@ -71,10 +99,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="add_form" method="POST">
+            <form id="add_form" method="POST" action="{{ route('rooms.store') }}">
+                @csrf
                 <div class="modal-body" style="min-height: 300px !important">
-                    <input type="hidden" name="_method" id="method" value="POST">
-                    <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -91,7 +118,7 @@
                 </div>
                 <div class="modal-footer bg-white br">
                     <button type="button" class="btn btn-danger float-left" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
-                    <button type="submit" id="add_button" class="btn btn-success waves-effect float-right">Submit</button>
+                    <button type="submit" id="sumbit" class="btn btn-success waves-effect float-right">Submit</button>
                 </div>
             </form>
         </div>
@@ -108,16 +135,16 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="update_form" method="POST">
+            <form id="edit_form">
+                <input type="hidden" name="_method" id="method" value="PUT">
+                <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                <input type="hidden" id="update_id" name="update_id">
                 <div class="modal-body">
-                    <input type="hidden" name="_method" id="method" value="PUT">
-                    <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
-                    <input type="hidden" id="update_id" name="update_id">
                     <div class="update_output"></div>
                 </div>
                 <div class="modal-footer bg-white">
                     <button type="button" class="btn btn-danger float-right" data-dismiss="modal">Close</button>
-                    <button type="submit" id="update_button" class="btn btn-primary waves-effect float-right">Update</button>
+                    <button type="submit" id="update" class="btn btn-primary waves-effect float-right">Update</button>
                 </div>
             </form>
         </div>    
@@ -156,39 +183,44 @@
 @section('page_js')
 
 <script>
-    function reset(){
-        $('select').selectric('refresh');
-        $(this).find('form').trigger('reset');
-        add_button.removeClass('btn-progress')
-        update_button.removeClass('btn-progress')
-        confirm_button.removeClass('btn-progress')
-        $(".output").html('');
-    }
 
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-    })
+    });
+
+    var add = $('#add');
+    var edit = $('#edit');
+    var show = $('#show');
     
+    var submit = $('#submit');
+    var update = $('#update');
+    var destroy = $('#destroy');
+
+    var add_modal = $('#add_modal');
+    var edit_modal = $('#edit_modal');
+    var delete_modal = $('#delete_modal');
+
+    var add_form = $('#add_form');
+    var edit_form = $('#edit_form');
+    var delete_form = $('#delete_form');
+
+    function reset(){
+        $(this).find('form').trigger('reset')
+        $('select').selectric('refresh')
+        submit.removeClass('btn-progress')
+        update.removeClass('btn-progress')
+        destroy.removeClass('btn-progress')
+    }
+
     $('.modal').on('hidden.bs.modal', function () {
-        $(".output").html('');
-        $('select').selectric('refresh');
-        $(this).find('form').trigger('reset');
-        add_button.removeClass('btn-progress')
-        update_button.removeClass('btn-progress')
-        confirm_button.removeClass('btn-progress')
+        $(this).find('form').trigger('reset')
+        $('select').selectric('refresh')
+        submit.removeClass('btn-progress')
+        update.removeClass('btn-progress')
+        destroy.removeClass('btn-progress')
     })
-
-    var add_modal = $('#add_modal')
-    var edit_modal = $('#edit_modal')
-    var confirm_modal = $('#confirm_modal')
-    var view_modal = $('#view_modal')
-
-    var add_button = $('#add_button')
-    var update_button = $('#update_button')
-    var confirm_button = $('#confirm_button')
-    var cancel_button = $('#cancel_button')
   
     var doctorHtml=`
     <div class="row" id="doctorChamber">
@@ -256,34 +288,18 @@
     `;
    
     $(document).ready(function(){
-        $('#roomTable').DataTable({
-            processing: false,
-            serverSide: true,
-            responsive: true,
-            dom: '<"toolbar">frtip',
-            ajax: {
-                url: "{{ route('rooms') }}",
-            },
-            columns: [
-                { data: 'DT_RowIndex', name:'DT_RowIndex'},
-                { data: "type", name:"type"},
-                { data: "code", name:"code"},
-                { data: "note", name:"note"},
-                { data: "status", name:"status"},
-                { data: "actions", name:"actions", orderable: false}
-            ]
-        })
-
+      
         $('#room_type').on('change', function(){
             reset();
             $('#room_type').selectric('Refresh');
-            add_modal.find('.modal-title').text('Add New Room/Chamber')
             var catValue = $(this).val(); 
             $("div.modal-footer").show();
             if(catValue=='2'){
+                add_modal.find('.modal-title').text('Add New Doctor Chamber')
                 $(".output").html(doctorHtml);
             }
             else if(catValue=='1'){
+                add_modal.find('.modal-title').text('Add New Pathology Room')
                 $(".output").html(pathologyHtml);
             }
          
@@ -295,68 +311,21 @@
            
         });
 
-        $('#add_new').click(function(){
+        add.click(function(){
             reset()
-            $("div.modal-footer").hide()
             add_modal.modal('show')
         });
-
-        $('#add_form').on('submit', function(event){
-            event.preventDefault()
-            var url = '{{ route("rooms.store") }}'
-            $.ajax({
-                url:url,
-                method: "POST",
-                data: $(this).serialize(),
-                dataType:"json",
-                beforeSend:function(){
-                    add_modal.find('.modal-title').text('Sending ...')
-                    add_button.addClass('btn-progress');
-                },
-                success:function(data)
-                {
-                    if(data.errors)
-                    {
-                        for(var count = 0; count < data.errors.length; count++)
-                        {
-                            iziToast.error({
-                                title: 'Error!',
-                                message: data.errors[count],
-                                position: 'topRight'
-                            });
-                        }
-                    
-                        $('#add_button').removeClass('btn-progress');
-                        add_modal.find('.modal-title').text('Error')
-                    }
-                    if(data.success)
-                    {
-                        setTimeout(function(){
-                            iziToast.success({
-                                title: 'Success!',
-                                message: data.success,
-                                position: 'topRight'
-                            })
-                            add_modal.find('.modal-title').text('Successful')
-                            $('#add_form')[0].reset();
-                            $('#add_button').removeClass('btn-progress');
-                            $('#roomTable').DataTable().ajax.reload();
-                            add_modal.modal('toggle')
-
-                        }, 500);
-                    }    
-                }
-            })
-        })
 
         $(document).on('click', '#edit', function(){
             reset()
             var id = $(this).data('id');
-            var url = '{{ route("rooms.edit",":id") }}';
-            url = url.replace(':id',id);
+            var edit_url = '{{ route("rooms.edit",":id") }}';
+            edit_url = edit_url.replace(':id',id);
 
+            var update_url = '{{ route("rooms.update",":id") }}';
+            update_url = update_url.replace(':id',id);
             $.ajax({
-                url :url,
+                url :edit_url,
                 dataType:"json",
                 success:function(data)
                 {
@@ -461,12 +430,13 @@
             })
         })
 
-        $('#update_form').on('submit', function(event){
+        $('#edit_form').on('submit', function(event){
             event.preventDefault()
             var update_id = $('#update_id').val();
+            var base_url = '{{ route("rooms") }}';
             var update_url = '{{ route("rooms.update",":update_id") }}';
             update_url = update_url.replace(':update_id',update_id);
-
+            alert(update_url)
             $.ajax({
                 url:update_url,
                 type:"PUT",
@@ -474,7 +444,7 @@
                 dataType:"json",
                 beforeSend:function(){
                     edit_modal.find('.modal-title').text('Updating ...')
-                    update_button.addClass('btn-progress');
+                    update.addClass('btn-progress');
                 },
                 success:function(data)
                 {
@@ -494,9 +464,9 @@
                     if(data.success)
                     {
                         setTimeout(function(){
-                            $('#roomTable').DataTable().ajax.reload()
                             edit_modal.modal('toggle')
                             reset()
+                            window.location = base_url;
                         }, 500);
 
                         iziToast.success({
@@ -509,41 +479,41 @@
             })
         })
 
-        $(document).on('click', '#delete', function(){
-            reset()
-            confirm_modal.find('.modal-title').text('Are You Sure ?')
-            confirm_msg.text(' Are you sure that you want to delete this entry?')
-            confirm_modal.modal('show')
-            var id = $(this).data('id');
-            confirm_button.click(function(){
-                var url = '{{ route("rooms.destroy",":id") }}';
-                url = url.replace(':id',id);
-                $.ajax({
-                    url:url,
-                    type:"DELETE",
-                    data:{id:id},
-                    dataType:"json",
-                    beforeSend:function(){
-                        confirm_modal.find('.modal-title').text('Deleting ...')
-                        confirm_button.addClass('btn-progress');
-                    },
-                    success:function(data)
-                    {
-                        setTimeout(function(){
-                            confirm_button.removeClass('btn-progress');
-                            confirm_modal.modal('toggle')
-                            $('#roomTable').DataTable().ajax.reload();
-                        }, 500);
+        // $(document).on('click', '#delete', function(){
+        //     reset()
+        //     confirm_modal.find('.modal-title').text('Are You Sure ?')
+        //     confirm_msg.text(' Are you sure that you want to delete this entry?')
+        //     confirm_modal.modal('show')
+        //     var id = $(this).data('id');
+        //     confirm_button.click(function(){
+        //         var url = '{{ route("rooms.destroy",":id") }}';
+        //         url = url.replace(':id',id);
+        //         $.ajax({
+        //             url:url,
+        //             type:"DELETE",
+        //             data:{id:id},
+        //             dataType:"json",
+        //             beforeSend:function(){
+        //                 confirm_modal.find('.modal-title').text('Deleting ...')
+        //                 confirm_button.addClass('btn-progress');
+        //             },
+        //             success:function(data)
+        //             {
+        //                 setTimeout(function(){
+        //                     confirm_button.removeClass('btn-progress');
+        //                     confirm_modal.modal('toggle')
+        //                     $('#roomTable').DataTable().ajax.reload();
+        //                 }, 500);
                        
-                        iziToast.warning({
-                            title: 'Warning!',
-                            message: data.success,
-                            position: 'topRight'
-                        });
-                    }
-                })
-            })
-        })
+        //                 iziToast.warning({
+        //                     title: 'Warning!',
+        //                     message: data.success,
+        //                     position: 'topRight'
+        //                 });
+        //             }
+        //         })
+        //     })
+        // })
 
     });
 </script>

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class PathologyDepartment extends Model
 {
     protected $fillable=[
-        'department_name',
-        'department_note',
-        'department_status',
+        'pathology_department_name',
+        'pathology_department_note',
+        'pathology_department_status',
         'user_id'
     ];
 }

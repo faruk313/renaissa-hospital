@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Room;
 use App\Models\PathologyDepartment;
 use App\Models\PathologyTest;
+use DataTables;
 use Auth;
+use Validator;
 
 class PathologyTestController extends Controller
 {
